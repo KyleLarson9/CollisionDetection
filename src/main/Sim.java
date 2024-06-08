@@ -74,19 +74,33 @@ public class Sim implements Runnable {
 			//System.out.println(intersectionX + ", " + intersectionY);
 		}
 		
+			
+		
+		
 	}
 	
 	private boolean lineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 		
-		float t = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/((y4-y3)*(x2-x1)-(x4-x3)*(y2-y1));
-		float u = ((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/((y4-y3)*(x2-x1)-(x4-x3)*(y2-y1));
+		float denominator = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
+		
+		if(denominator == 0) { // parallel
+			return false;
+		}
+		
+		float t = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/denominator;
+		float u = ((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/denominator;
 		
 		intersectionX = x1 + t*(x2-x1);
 		intersectionY = y1 + t*(y2-y1);
 		
-		return t <= 1 && t >= 0 && u <= 1 && u >= 0;
+		if(intersectionX >= x3 && intersectionY <= x4 && intersectionY >= y3 && intersectionY <= y4) { 
+			return true;
+		} else {
+			return false;
+		}
+
 	}
-	
+	 
 	private void startSimLoop() {
 		thread = new Thread(this);
 		thread.start();
