@@ -4,16 +4,20 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 public class CollisionSystem {
 	
 	private Sim sim;
+	
+	private ArrayList<Point2D.Float> intersectionPoints;
 	
 	private float intersectionX = -1;
 	private float intersectionY = -1;
 	
 	public CollisionSystem(Sim sim) {
 		this.sim = sim;
+		this.intersectionPoints = new ArrayList<>();
 	}
 	
 	// public methods
@@ -42,12 +46,15 @@ public class CollisionSystem {
 		g2d.draw(new Line2D.Double(x3, y3, x4, y4));
 		
 		boolean hit = lineLineCollision(x1, y1, x2, y2, x3, y3, x4, y4);
-		
+						
 		if(hit == true) {
 			g2d.setColor(Color.orange);
 			g2d.fillOval((int) intersectionX - 5,(int) intersectionY - 5,(int) 10,(int) 10);
-			//System.out.println(intersectionX + ", " + intersectionY);
+//			g2d.setColor(Color.green);
+//			g2d.draw(new Line2D.Float(intersectionX, intersectionY, 20, 20));
+//			System.out.println(intersectionX + ", " + intersectionY);
 		}
+		
 	}
 	
 	private boolean lineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
@@ -63,7 +70,11 @@ public class CollisionSystem {
 		intersectionX = x1 + t*(x2-x1);
 		intersectionY = y1 + t*(y2-y1);
 		
-		if(intersectionX >= x3 && intersectionY <= x4 && intersectionY >= y3 && intersectionY <= y4) { 
+		// distance from each point on line 1 to intersection point
+		float d1 = (float) Math.sqrt(Math.pow((intersectionX - x2), 2) + Math.sqrt(Math.pow((intersectionY - y2), 2)));
+		float d2 = (float) Math.sqrt(Math.pow((intersectionX - x1), 2) + Math.sqrt(Math.pow((intersectionY - y1), 2)));
+		
+		if(intersectionX >= x3 && intersectionY <= x4 && intersectionY >= y3 && intersectionY <= y4 && d1 < d2) { 
 			return true;
 		} else {
 			return false;
@@ -88,5 +99,9 @@ public class CollisionSystem {
 		} else {
 			return null;
 		}
+	}
+	
+	private Line2D.Float getLines() {
+		return null;
 	}
 }
