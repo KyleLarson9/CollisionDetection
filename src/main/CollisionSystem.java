@@ -56,7 +56,7 @@ public class CollisionSystem {
 		
 		g2d.setColor(Color.cyan);
 		g2d.draw(new Line2D.Double(x3, y3, x4, y4));
-		
+		 
 		boolean hit = predictedLineLineCollision(x1, y1, x2, y2, x3, y3, x4, y4);
 		
 		if(hit == true) {
@@ -76,15 +76,10 @@ public class CollisionSystem {
 		
 		boolean hit = lineRectangleCollision(x1, y1, x2, y2, rectX, rectY, rectWidth, rectHeight);
 		
-		for(int i = 0; i < 3; i++) {
-			if(hit == true) {
-				g2d.setColor(Color.red);
-				g2d.fillOval((int) intersectionX - 5,(int) intersectionY - 5,(int) 10,(int) 10);
-				i++;
-			}
+		if(hit == true) {
+			g2d.setColor(Color.red);
+			g2d.fillOval((int) intersectionX - 5,(int) intersectionY - 5,(int) 10,(int) 10);
 		}
-		
-		
 	}
 	
 	// just displays collision point
@@ -155,12 +150,14 @@ public class CollisionSystem {
 		
 		// check each line segment
 		boolean top  = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX + rectWidth, rectY);
-		//boolean left = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX, rectY + rectHeight);
-		
-		if(top) {
-			return true;
-		}
-		
+		if(top) return true;
+		boolean bottom = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY + rectHeight, rectX + rectWidth, rectY + rectHeight);
+		if(bottom) return true;
+		boolean left = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX, rectY + rectHeight);
+		if(left) return true;
+		boolean right = predictedLineLineCollision(x1, y1, x2, y2, rectX + rectWidth, rectY, rectX + rectWidth, rectY + rectHeight);
+		if(right) return true;
+
 		return false;
 	}
 	
