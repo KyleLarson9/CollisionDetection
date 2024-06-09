@@ -39,34 +39,68 @@ public class CollisionSystem {
 		
 		float x3 = 100;
 		float y3 = 100;
-		float x4 = 300;
-		float y4 = 200;
+		float x4 = 500;
+		float y4 = 300;
 		
 		g2d.setColor(Color.cyan);
 		g2d.draw(new Line2D.Double(x3, y3, x4, y4));
 		
-		boolean hit = lineLineCollision(x1, y1, x2, y2, x3, y3, x4, y4);
-						
-		if(hit == true) {
-			g2d.setColor(Color.orange);
+		float x5 = 100;
+		float y5 = 200;
+		float x6 = 400; 
+		float y6 = 500;		
+		
+		g2d.draw(new Line2D.Double(x5, y5, x6, y6));
+		
+		//boolean hit = lineLineCollision(x1, y1, x2, y2, x3, y3, x4, y4);
+		boolean hit2 = predictedLineLineCollision(x1, y1, x2, y2, x5, y5, x6, y6);
+		
+		if(hit2 == true) {
+			g2d.setColor(Color.red);
 			g2d.fillOval((int) intersectionX - 5,(int) intersectionY - 5,(int) 10,(int) 10);
-//			g2d.setColor(Color.green);
-//			g2d.draw(new Line2D.Float(intersectionX, intersectionY, 20, 20));
-//			System.out.println(intersectionX + ", " + intersectionY);
 		}
 		
 	}
 	
+	// just displays collision point
 	private boolean lineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+		
+		boolean intersected = true;
 		float denominator = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
 		
 		if(denominator == 0) { // parallel
-			return false;
+			intersected = false;
 		}
 		
 		float t = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/denominator;
 		float u = ((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/denominator;
 		
+		if(t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+			intersectionX = x1 + t*(x2-x1);
+			intersectionY = y1 + t*(y2-y1);
+			
+			intersected = true;
+		} else {
+			intersected = false;
+		}
+		
+		return intersected;
+	}
+	
+	// displays collision point and predicted collision point
+	private boolean predictedLineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+		
+		boolean intersected = true;
+		float denominator = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
+		
+		if(denominator == 0) { // parallel
+			intersected = false;
+		}
+		
+		float t = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/denominator;
+		float u = ((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/denominator;
+		
+		// calculate intersection point
 		intersectionX = x1 + t*(x2-x1);
 		intersectionY = y1 + t*(y2-y1);
 		
@@ -74,34 +108,30 @@ public class CollisionSystem {
 		float d1 = (float) Math.sqrt(Math.pow((intersectionX - x2), 2) + Math.sqrt(Math.pow((intersectionY - y2), 2)));
 		float d2 = (float) Math.sqrt(Math.pow((intersectionX - x1), 2) + Math.sqrt(Math.pow((intersectionY - y1), 2)));
 		
-		if(intersectionX >= x3 && intersectionY <= x4 && intersectionY >= y3 && intersectionY <= y4 && d1 < d2) { 
-			return true;
+		
+		
+		if(x3 == x4) { // vertical lines
+			if(intersectionY >= y3 && intersectionY <= y4 && d1 < d2) {
+				intersected = true;
+			} else {
+				intersected = false;
+			}
+		} else if(intersectionX >= x3 && intersectionX <= x4 && d1 < d2) { // non vertical lines
+			intersected = true;
 		} else {
-			return false;
+			intersected = false;
 		}
+		
+		// vertical lines
+		
+		return intersected;
+		
 	}
 	
-	private Point2D.Float getIntersectionPoints(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+	private boolean lineRectangleCollision(float x1, float y1, float x2, float y2) {
 		
-		float denominator = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
-		if(denominator == 0) { // parallel
-			return null;
-		}
 		
-		float t = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/denominator;
-		float u = ((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/denominator;
-		
-		intersectionX = x1 + t*(x2-x1);
-		intersectionY = y1 + t*(y2-y1);
-		
-		if(intersectionX >= x3 && intersectionY <= x4 && intersectionY >= y3 && intersectionY <= y4) { 
-			return new Point2D.Float(intersectionX, intersectionY);
-		} else {
-			return null;
-		}
+		return true;
 	}
 	
-	private Line2D.Float getLines() {
-		return null;
-	}
 }
