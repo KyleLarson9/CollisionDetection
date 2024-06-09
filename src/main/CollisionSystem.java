@@ -3,7 +3,9 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Line2D.Float;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class CollisionSystem {
@@ -13,8 +15,26 @@ public class CollisionSystem {
 	private float intersectionX = -1;
 	private float intersectionY = -1;
 	
+	// mouse controlled  line
+	float x1 = Sim.SIM_WIDTH/2;
+	float y1 = Sim.SIM_HEIGHT/2;
+	float x2;
+	float y2;
+	
+	// static line
+	float x3 = 100;
+	float y3 = 100;
+	float x4 = 500;
+	float y4 = 300;
+	
+	// rectangle
+	float rectX = 100;
+	float rectY = 400;
+	float rectWidth = 100;
+	float rectHeight = 100;
 	public CollisionSystem(Sim sim) {
 		this.sim = sim;
+		
 	}
 	
 	// public methods
@@ -27,18 +47,12 @@ public class CollisionSystem {
 	// private methods
 	
 	private void renderLineIntersectionPoints(Graphics2D g2d) {
-		float x1 = Sim.SIM_WIDTH/2;
-		float y1 = Sim.SIM_HEIGHT/2;
-		float x2 = sim.mouseInputs.getX();
-		float y2 = sim.mouseInputs.getY();
+		
+		x2 = sim.mouseInputs.getX();
+		y2 = sim.mouseInputs.getY();
 		
 		g2d.setColor(Color.red);
 		g2d.draw(new Line2D.Double(x1, y1, x2, y2));
-		
-		float x3 = 100;
-		float y3 = 100;
-		float x4 = 500;
-		float y4 = 300;
 		
 		g2d.setColor(Color.cyan);
 		g2d.draw(new Line2D.Double(x3, y3, x4, y4));
@@ -53,6 +67,23 @@ public class CollisionSystem {
 	}
 	
 	private void renderLineRectIntersectionPoints(Graphics2D g2d) {
+		
+		x2 = sim.mouseInputs.getX();
+		y2 = sim.mouseInputs.getY();
+		
+		g2d.setColor(Color.green);
+		g2d.fill(new Rectangle2D.Float(rectX, rectY, rectWidth, rectHeight)); // x, y, width, height
+		
+		boolean hit = lineRectangleCollision(x1, y1, x2, y2, rectX, rectY, rectWidth, rectHeight);
+		
+		for(int i = 0; i < 3; i++) {
+			if(hit == true) {
+				g2d.setColor(Color.red);
+				g2d.fillOval((int) intersectionX - 5,(int) intersectionY - 5,(int) 10,(int) 10);
+				i++;
+			}
+		}
+		
 		
 	}
 	
@@ -120,10 +151,17 @@ public class CollisionSystem {
 		return intersected;
 	}
 	
-	private boolean lineRectangleCollision(float x1, float y1, float x2, float y2) {
+	private boolean lineRectangleCollision(float x1, float y1, float x2, float y2, float rectX, float rectY, float rectWidth, float rectHeight) {
 		
+		// check each line segment
+		boolean top  = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX + rectWidth, rectY);
+		//boolean left = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX, rectY + rectHeight);
 		
-		return true;
+		if(top) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 }
