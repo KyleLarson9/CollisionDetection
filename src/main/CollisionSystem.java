@@ -55,7 +55,7 @@ public class CollisionSystem {
 		renderLineIntersectionPoints(g2d);
 		renderLineRectIntersectionPoints(g2d);
 		drawPolygons(g2d);	
-		
+		drawPolygonVerticies(g2d);
 	}
 	
 	// private methods
@@ -65,7 +65,7 @@ public class CollisionSystem {
 		double centerX = 400;
 		double centerY = 400;
 		int rotate = 90;
-		sides = 4;
+		sides = 8;
 		radius = 100;
 
 		// Create polygon		
@@ -84,7 +84,17 @@ public class CollisionSystem {
 		}
 		polygon.closePath();
 		
+		g2d.setColor(Color.magenta);
 		g2d.draw(polygon);
+		
+	}
+	
+	private void drawPolygonVerticies(Graphics2D g2d) {
+		
+		for(Point2D.Double vertex : vertices) {
+			g2d.setColor(Color.black);
+			g2d.fillOval((int) vertex.getX() - 5, (int) vertex.getY() - 5, 10, 10);
+		}
 		
 	}
 	
