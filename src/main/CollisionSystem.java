@@ -37,13 +37,16 @@ public class CollisionSystem {
 	float rectHeight = 100;
 	
 	// polygons
-	private int sides;
+	public int sides;
 	private double radius;
 	private Path2D.Float polygon;
+	public ArrayList<Point2D.Double> vertices = new ArrayList<>();
+
 
 	public CollisionSystem(Sim sim) {
 		this.sim = sim;	
 		this.polygon = new Path2D.Float();
+		
 	}
 	
 	// public methods
@@ -58,20 +61,21 @@ public class CollisionSystem {
 	// private methods
 	
 	private void drawPolygons(Graphics2D g2d) {
-		
+		 
 		double centerX = 400;
 		double centerY = 400;
-		int rotate = 0;
-		sides = 10;
-		radius = 50;
-		
-		// Create polygon
-	    polygon = new Path2D.Float();
-		
+		int rotate = 90;
+		sides = 4;
+		radius = 100;
+
+		// Create polygon		
 		for(int i = 0; i < sides; i++) {
 			double angle = Math.toRadians((i * 360/sides) - rotate); // total angle from start to vertex, subtract 90 to rotate
 			double x = centerX + radius * Math.cos(angle);
 			double y = centerY + radius * Math.sin(angle);
+			
+	        vertices.add(new Point2D.Double(x, y));
+
 			if(i == 0) {
 				polygon.moveTo(x, y); // place initial point
 			} else {
@@ -81,6 +85,7 @@ public class CollisionSystem {
 		polygon.closePath();
 		
 		g2d.draw(polygon);
+		
 	}
 	
 	private void renderLineIntersectionPoints(Graphics2D g2d) {
