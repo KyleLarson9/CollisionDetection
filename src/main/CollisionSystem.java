@@ -4,11 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Line2D.Float;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class CollisionSystem {
+	
+	// make a line segment polygon algorithm  
 	
 	private Sim sim;
 		
@@ -32,9 +35,15 @@ public class CollisionSystem {
 	float rectY = 400;
 	float rectWidth = 100;
 	float rectHeight = 100;
+	
+	// polygons
+	private int sides;
+	private double radius;
+	private Path2D.Float polygon;
+
 	public CollisionSystem(Sim sim) {
-		this.sim = sim;
-		
+		this.sim = sim;	
+		this.polygon = new Path2D.Float();
 	}
 	
 	// public methods
@@ -42,9 +51,37 @@ public class CollisionSystem {
 	public void render(Graphics2D g2d) {
 		renderLineIntersectionPoints(g2d);
 		renderLineRectIntersectionPoints(g2d);
+		drawPolygons(g2d);	
+		
 	}
 	
 	// private methods
+	
+	private void drawPolygons(Graphics2D g2d) {
+		
+		double centerX = 400;
+		double centerY = 400;
+		int rotate = 0;
+		sides = 10;
+		radius = 50;
+		
+		// Create polygon
+	    polygon = new Path2D.Float();
+		
+		for(int i = 0; i < sides; i++) {
+			double angle = Math.toRadians((i * 360/sides) - rotate); // total angle from start to vertex, subtract 90 to rotate
+			double x = centerX + radius * Math.cos(angle);
+			double y = centerY + radius * Math.sin(angle);
+			if(i == 0) {
+				polygon.moveTo(x, y); // place initial point
+			} else {
+				polygon.lineTo(x, y); // place next point
+			}
+		}
+		polygon.closePath();
+		
+		g2d.draw(polygon);
+	}
 	
 	private void renderLineIntersectionPoints(Graphics2D g2d) {
 		
@@ -151,12 +188,13 @@ public class CollisionSystem {
 		// check each line segment
 		boolean top  = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX + rectWidth, rectY);
 		if(top) return true;
+		boolean right = predictedLineLineCollision(x1, y1, x2, y2, rectX + rectWidth, rectY, rectX + rectWidth, rectY + rectHeight);
+		if(right) return true;
 		boolean bottom = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY + rectHeight, rectX + rectWidth, rectY + rectHeight);
 		if(bottom) return true;
 		boolean left = predictedLineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX, rectY + rectHeight);
 		if(left) return true;
-		boolean right = predictedLineLineCollision(x1, y1, x2, y2, rectX + rectWidth, rectY, rectX + rectWidth, rectY + rectHeight);
-		if(right) return true;
+		
 
 		return false;
 	}
