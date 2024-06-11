@@ -19,34 +19,43 @@ public class CollisionSystem {
 	private float intersectionY = -1;
 	
 	// mouse controlled  line
-	float x1 = Sim.SIM_WIDTH/2;
-	float y1 = Sim.SIM_HEIGHT/2;
-	float x2;
-	float y2;
+	private float x1 = Sim.SIM_WIDTH/2;
+	private float y1 = Sim.SIM_HEIGHT/2;
+	private float x2;
+	private float y2;
 	
 	// static line
-	float x3 = 100;
-	float y3 = 100;
-	float x4 = 500;
-	float y4 = 300;
+	private float x3 = 100;
+	private float y3 = 100;
+	private float x4 = 500;
+	private float y4 = 300;
 	
 	// rectangle
-	float rectX = 100;
-	float rectY = 400;
-	float rectWidth = 100;
-	float rectHeight = 100;
+	private float rectX = 100;
+	private float rectY = 400;
+	private float rectWidth = 100;
+	private float rectHeight = 100;
 	
 	// polygons
-	public int sides;
+	private  int sides;
 	private double radius;
 	private Path2D.Float polygon;
-	public ArrayList<Point2D.Double> vertices = new ArrayList<>();
+	private  ArrayList<Point2D.Double> vertices = new ArrayList<>();
 
 
 	public CollisionSystem(Sim sim) {
 		this.sim = sim;	
-		this.polygon = new Path2D.Float();
+		polygon = new Path2D.Float();
+		vertices = new ArrayList<>();
 		
+		initializePolygon();
+		
+		// write this down: never add things in render method because it will continusouly add them while the program is running
+		int count = 0;
+		for(Point2D.Double vertex : vertices) {
+			count++;
+			System.out.println("Vertex " + count + ": " + vertex.getX() + ", " + vertex.getY());
+		}
 	}
 	
 	// public methods
@@ -54,39 +63,42 @@ public class CollisionSystem {
 	public void render(Graphics2D g2d) {
 		renderLineIntersectionPoints(g2d);
 		renderLineRectIntersectionPoints(g2d);
-		drawPolygons(g2d);	
+		renderPolygon(g2d);
 		drawPolygonVerticies(g2d);
 	}
 	
 	// private methods
 	
-	private void drawPolygons(Graphics2D g2d) {
-		 
+	private void initializePolygon() {
+		vertices.clear();
+		polygon.reset();
+		
 		double centerX = 400;
 		double centerY = 400;
 		int rotate = 90;
 		sides = 8;
 		radius = 100;
-
-		// Create polygon		
+		
 		for(int i = 0; i < sides; i++) {
-			double angle = Math.toRadians((i * 360/sides) - rotate); // total angle from start to vertex, subtract 90 to rotate
+			double angle = Math.toRadians((i*360)/sides - rotate);
 			double x = centerX + radius * Math.cos(angle);
 			double y = centerY + radius * Math.sin(angle);
 			
-	        vertices.add(new Point2D.Double(x, y));
-
+			vertices.add(new Point2D.Double(x, y));
+			
 			if(i == 0) {
-				polygon.moveTo(x, y); // place initial point
+				polygon.moveTo(x, y);
 			} else {
-				polygon.lineTo(x, y); // place next point
+				polygon.lineTo(x, y);
 			}
 		}
-		polygon.closePath();
 		
+		polygon.closePath();
+	}
+
+	private void renderPolygon(Graphics2D g2d) {
 		g2d.setColor(Color.magenta);
 		g2d.draw(polygon);
-		
 	}
 	
 	private void drawPolygonVerticies(Graphics2D g2d) {
@@ -135,30 +147,6 @@ public class CollisionSystem {
 	}
 	
 	// just displays collision point
-	private boolean lineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-		
-		boolean intersected = true;
-		float denominator = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
-		
-		if(denominator == 0) { // check if parallel
-			intersected = false;
-		}
-		
-	    // Calculate the parameters t and u for the intersection formulas
-		float t = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/denominator;
-		float u = ((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/denominator;
-		
-	    // Check if the intersection point lies on the second line segment
-		if(t >= 0 && t <= 1 && u >= 0 && u <= 1) {
-			intersectionX = x1 + t*(x2-x1);
-			intersectionY = y1 + t*(y2-y1);
-			intersected = true;
-		} else {
-			intersected = false;
-		}
-		
-		return intersected;
-	}
 	
 	// displays collision point and predicted collision point
 	private boolean predictedLineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
@@ -198,6 +186,31 @@ public class CollisionSystem {
 		return intersected;
 	}
 	
+	private boolean lineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+		
+		boolean intersected = true;
+		float denominator = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
+		
+		if(denominator == 0) { // check if parallel
+			intersected = false;
+		}
+		
+	    // Calculate the parameters t and u for the intersection formulas
+		float t = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/denominator;
+		float u = ((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/denominator;
+		
+	    // Check if the intersection point lies on the second line segments
+		if(t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+			intersectionX = x1 + t*(x2-x1);
+			intersectionY = y1 + t*(y2-y1);
+			intersected = true;
+		} else {
+			intersected = false;
+		}
+		
+		return intersected;
+	}
+
 	private boolean lineRectangleCollision(float x1, float y1, float x2, float y2, float rectX, float rectY, float rectWidth, float rectHeight) {
 		
 		// check each line segment
@@ -214,4 +227,8 @@ public class CollisionSystem {
 		return false;
 	}
 	
+	private boolean linePolygonCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+		
+		return false;
+	}
 }
