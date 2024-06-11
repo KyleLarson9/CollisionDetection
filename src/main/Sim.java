@@ -1,6 +1,9 @@
 package main;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
+
+import collisionLogic.CollisionRenderMethods;
 import inputs.MouseInputs;
 
 public class Sim implements Runnable {
@@ -8,7 +11,7 @@ public class Sim implements Runnable {
 	private SimFrame frame;
 	public SimPanel panel;
 	public MouseInputs mouseInputs;
-	private CollisionSystem collisionSystem;
+	private CollisionRenderMethods collisionRenderMethods;
 	
 	private Thread thread;
 	private boolean running = true;
@@ -16,7 +19,7 @@ public class Sim implements Runnable {
 	private final int FPS = 120;
 	private final int UPS = 200;
 	
-	private final static int TILES_DEFAULT_SIZE = 20;
+	private final static int TILES_DEFAULT_SIZE = 20; 
 	private final static float SCALE = 1.0f;
 	private final static int TILES_IN_WIDTH = 30;
 	private final static int TILES_IN_HEIGHT = 30;
@@ -33,12 +36,13 @@ public class Sim implements Runnable {
 		panel.addMouseMotionListener(mouseInputs);
 		
 		startSimLoop();
+
 	}
 
 	// public methods
 	
 	public void render(Graphics2D g2d) {
-		collisionSystem.render(g2d);
+		collisionRenderMethods.render(g2d);
 	}
 	
 	// private methods
@@ -52,7 +56,7 @@ public class Sim implements Runnable {
 		panel = new SimPanel(this);
 		mouseInputs = new MouseInputs();
 		frame = new SimFrame(panel);
-		collisionSystem = new CollisionSystem(this);
+		collisionRenderMethods = new CollisionRenderMethods(this);
 	}
 	
 	@Override
