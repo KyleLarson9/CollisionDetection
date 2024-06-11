@@ -31,11 +31,11 @@ public class CollisionRenderMethods extends CollisionSystem {
 		g2d.draw(polygon);
 		
 		g2d.setColor(Color.red);
-	    for (Point2D.Double point : polygonIntersectionPoints) {
+	    for (Point2D.Double point : intersectionPointManager.getIntersectionPoints()) {
 	        g2d.fill(new Ellipse2D.Double(point.x - 5, point.y - 5, 10, 10));
 	    }
 	    
-	    for(Point2D.Double point : polygonIntersectionPoints) {
+	    for(Point2D.Double point : intersectionPointManager.getIntersectionPoints()) {
 	    	System.out.println("Point: " + point.x + ", " + point.y);
 	    }
 	}

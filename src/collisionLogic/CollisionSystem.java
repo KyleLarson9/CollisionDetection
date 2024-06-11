@@ -2,12 +2,13 @@ package collisionLogic;
 
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 
 import main.Sim;
 
 public abstract class CollisionSystem {
+	
+	public IntersectionPointManager intersectionPointManager;
 	
 	public float intersectionX = -1;
 	public float intersectionY = -1;
@@ -35,12 +36,11 @@ public abstract class CollisionSystem {
 	public double radius;
 	public Path2D.Float polygon;
 	public ArrayList<Point2D.Double> vertices = new ArrayList<>();
-			
-	public ArrayList<Point2D.Double> polygonIntersectionPoints = new ArrayList<>();
-	
+		
 	public CollisionSystem() {
 		polygon = new Path2D.Float();
 		vertices = new ArrayList<>();
+		intersectionPointManager = new IntersectionPointManager();
 		
 		initializePolygon();
 		
@@ -98,13 +98,13 @@ public abstract class CollisionSystem {
 	    // Check if the intersection point lies on the second line segment
 		if(x3 == x4) { // vertical lines
 			if(intersectionY >= y3 && intersectionY <= y4 && d1 < d2 || intersectionY <= y3 && intersectionY >= y4 && d1 < d2) {
-				polygonIntersectionPoints.add(new Point2D.Double(intersectionX, intersectionY));
+				intersectionPointManager.addIntersectionPoint(intersectionX, intersectionY);
 				intersected = true;
 			} else {
 				intersected = false;
 			}
 		} else if(intersectionX >= x3 && intersectionX <= x4 && d1 < d2 || intersectionX <= x3 && intersectionX >= x4 && d1 < d2 ) { // non vertical lines
-			polygonIntersectionPoints.add(new Point2D.Double(intersectionX, intersectionY));
+			intersectionPointManager.addIntersectionPoint(intersectionX, intersectionY);
 			intersected = true;
 		} else {
 			intersected = false;
@@ -116,7 +116,6 @@ public abstract class CollisionSystem {
 	public boolean lineRectangleCollision(float x1, float y1, float x2, float y2, float rectX, float rectY, float rectWidth, float rectHeight) {
 		
 		// check each line segment
-		
 		boolean top  = lineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX + rectWidth, rectY);
 		if(top) return true;
 		boolean right = lineLineCollision(x1, y1, x2, y2, rectX + rectWidth, rectY, rectX + rectWidth, rectY + rectHeight);
@@ -131,11 +130,9 @@ public abstract class CollisionSystem {
 	}
 	
 	public boolean linePolygonCollision(float x1, float y1, float x2, float y2) {
-				
-		//**** If there is no current intersection happening, clear the list
-		
+						
 		boolean collision = false;
-		polygonIntersectionPoints.clear(); // important
+		intersectionPointManager.clear(); // important
 		
 		// loop through each line segment
 		for(int i = 0; i < sides - 1; i++) {
