@@ -26,29 +26,27 @@ public abstract class CollisionSystem {
 	public float y4 = 300;
 	
 	// polygons
-	public  int sides;
-	public double radius;
-	public Path2D.Float polygon;
+	public  int sides = 4;
+	public double radius = 100;
+	public Path2D.Float newPolyShape;
 	public ArrayList<Point2D.Double> vertices = new ArrayList<>();
-		
+	
 	public CollisionSystem() {
-		polygon = new Path2D.Float();
+		newPolyShape = new Path2D.Float();
 		vertices = new ArrayList<>();
 		intersectionPointManager = new IntersectionPointManager();
 		
-		initializePolygon();
+		initializePolygon(newPolyShape);
 		
 	}
 
-	public void initializePolygon() {
+	public void initializePolygon(Path2D.Float newPolyShape) {
 		vertices.clear();
-		polygon.reset();
+		newPolyShape.reset();
 		
 		double centerX = 400;
 		double centerY = 400;
-		int rotate = 0;
-		sides = 3;
-		radius = 100;
+		int rotate = 0;		
 		
 		for(int i = 0; i < sides; i++) {
 			double angle = Math.toRadians((i*360)/sides - rotate);
@@ -56,21 +54,25 @@ public abstract class CollisionSystem {
 			double y = centerY + radius * Math.sin(angle);
 			
 			vertices.add(new Point2D.Double(x, y));
-			
+
 			if(i == 0) {
-				polygon.moveTo(x, y);
+				newPolyShape.moveTo(x, y);
 			} else {
-				polygon.lineTo(x, y);
+				newPolyShape.lineTo(x, y);
 			}
 		}
-		
-		polygon.closePath();
+				
+		newPolyShape.closePath();
+
+		vertices.add(vertices.get(0)); // add the first vertex to the last index of the array list so it can render the collision for the last segment
+
 	}
 	
 	// finds the line collision point as well as determines the point if the lines aren't intersecting yet
 	public boolean lineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 		
 		boolean intersected = false;
+		
 		float denominator = (y4-y3)*(x2-x1)-(x4-x3)*(y2-y1);
 		
 		if(denominator == 0) { // check if parallel
@@ -88,16 +90,16 @@ public abstract class CollisionSystem {
 	    // Calculate distances from the intersection point to the endpoints of the first line segment
 		float d1 = (float) Math.sqrt(Math.pow((intersectionX - x2), 2) + Math.sqrt(Math.pow((intersectionY - y2), 2)));
 		float d2 = (float) Math.sqrt(Math.pow((intersectionX - x1), 2) + Math.sqrt(Math.pow((intersectionY - y1), 2)));
-		
+
 	    // Check if the intersection point lies on the second line segment
 		if(x3 == x4) { // vertical lines
-			if(intersectionY >= y3 && intersectionY <= y4 && d1 < d2 || intersectionY <= y3 && intersectionY >= y4 && d1 < d2) {
+			if((intersectionY >= y3 && intersectionY <= y4 && d1 < d2) || (intersectionY <= y3 && intersectionY >= y4 && d1 < d2)) {
 				intersectionPointManager.addIntersectionPoint(intersectionX, intersectionY);
 				intersected = true;
 			} else {
 				intersected = false;
 			}
-		} else if(intersectionX >= x3 && intersectionX <= x4 && d1 < d2 || intersectionX <= x3 && intersectionX >= x4 && d1 < d2 ) { // non vertical lines
+		} else if((intersectionX >= x3 && intersectionX <= x4 && d1 < d2) || (intersectionX <= x3 && intersectionX >= x4 && d1 < d2)) { // non vertical lines
 			intersectionPointManager.addIntersectionPoint(intersectionX, intersectionY);
 			intersected = true;
 		} else {
@@ -110,15 +112,15 @@ public abstract class CollisionSystem {
 	public boolean linePolygonCollision(float x1, float y1, float x2, float y2) {
 						
 		boolean collision = false;
-		intersectionPointManager.clear(); // important
+		intersectionPointManager.clear(); 
 		
 		// loop through each line segment
-		for(int i = 0; i < sides - 1; i++) {
+		for(int i = 0; i < vertices.size() - 1; i++) {
 			float x3 = (float) vertices.get(i).x;
 			float y3 = (float) vertices.get(i).y;
-			float x4 = (float) vertices.get(i + 1).x;
-			float y4 = (float) vertices.get(i + 1).y;
-			
+			float x4 = (float) vertices.get((i + 1)).x;
+			float y4 = (float) vertices.get((i + 1)).y;
+
 			if(lineLineCollision(x1, y1, x2, y2, x3, y3, x4, y4)) {
 				collision = true;
 			} else {
@@ -131,7 +133,3 @@ public abstract class CollisionSystem {
 	}
 	
 }
-
-// idea for light refraction sim
-// if there is a rectangle add special options to change the length of it then I don't need to have seperate methods for 
-// rectangle and polygon

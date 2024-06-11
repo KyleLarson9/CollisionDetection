@@ -27,13 +27,15 @@ public class CollisionRenderMethods extends CollisionSystem {
 
 	private void renderPolygon(Graphics2D g2d) {
 		g2d.setColor(Color.magenta);
-		g2d.draw(polygon);
+		g2d.draw(newPolyShape);
 		
 		g2d.setColor(Color.red);
-	    for (Point2D.Double point : intersectionPointManager.getIntersectionPoints()) {
+		
+		
+	    for(Point2D.Double point : intersectionPointManager.getIntersectionPoints()) {
 	        g2d.fill(new Ellipse2D.Double(point.x - 5, point.y - 5, 10, 10));
+	        
 	    }
-
 	}
 	
 	private void renderLineIntersectionPoints(Graphics2D g2d) {
