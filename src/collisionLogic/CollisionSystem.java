@@ -25,12 +25,6 @@ public abstract class CollisionSystem {
 	public float x4 = 500;
 	public float y4 = 300;
 	
-	// rectangle
-	public float rectX = 100;
-	public float rectY = 400;
-	public float rectWidth = 100;
-	public float rectHeight = 100;
-	
 	// polygons
 	public  int sides;
 	public double radius;
@@ -111,22 +105,6 @@ public abstract class CollisionSystem {
 		}
 				
 		return intersected;
-	}
-
-	public boolean lineRectangleCollision(float x1, float y1, float x2, float y2, float rectX, float rectY, float rectWidth, float rectHeight) {
-		
-		// check each line segment
-		boolean top  = lineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX + rectWidth, rectY);
-		if(top) return true;
-		boolean right = lineLineCollision(x1, y1, x2, y2, rectX + rectWidth, rectY, rectX + rectWidth, rectY + rectHeight);
-		if(right) return true;
-		boolean bottom = lineLineCollision(x1, y1, x2, y2, rectX, rectY + rectHeight, rectX + rectWidth, rectY + rectHeight);
-		if(bottom) return true;
-		boolean left = lineLineCollision(x1, y1, x2, y2, rectX, rectY, rectX, rectY + rectHeight);
-		if(left) return true;
-		
-
-		return false;
 	}
 	
 	public boolean linePolygonCollision(float x1, float y1, float x2, float y2) {

@@ -20,7 +20,6 @@ public class CollisionRenderMethods extends CollisionSystem {
 
 	public void render(Graphics2D g2d) {
 		renderLineIntersectionPoints(g2d);
-		renderLineRectIntersectionPoints(g2d);
 		renderPolygon(g2d);
 		renderLinePolyIntersectionPoints(g2d);
 		
@@ -34,10 +33,7 @@ public class CollisionRenderMethods extends CollisionSystem {
 	    for (Point2D.Double point : intersectionPointManager.getIntersectionPoints()) {
 	        g2d.fill(new Ellipse2D.Double(point.x - 5, point.y - 5, 10, 10));
 	    }
-	    
-	    for(Point2D.Double point : intersectionPointManager.getIntersectionPoints()) {
-	    	System.out.println("Point: " + point.x + ", " + point.y);
-	    }
+
 	}
 	
 	private void renderLineIntersectionPoints(Graphics2D g2d) {
@@ -58,22 +54,6 @@ public class CollisionRenderMethods extends CollisionSystem {
 			g2d.fill(new Ellipse2D.Double(intersectionX - 5, intersectionY - 5, 10, 10));
 		}
 		
-	}
-	
-	private void renderLineRectIntersectionPoints(Graphics2D g2d) {
-		
-		x2 = sim.mouseInputs.getX();
-		y2 = sim.mouseInputs.getY();
-		
-		g2d.setColor(Color.green);
-		g2d.fill(new Rectangle2D.Float(rectX, rectY, rectWidth, rectHeight)); // x, y, width, height
-		
-		boolean hit = lineRectangleCollision(x1, y1, x2, y2, rectX, rectY, rectWidth, rectHeight);
-		
-		if(hit == true) {
-			g2d.setColor(Color.red);
-			g2d.fillOval((int) intersectionX - 5,(int) intersectionY - 5,(int) 10,(int) 10);
-		}
 	}
 		
 	private void renderLinePolyIntersectionPoints(Graphics2D g2d) {
