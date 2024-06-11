@@ -3,7 +3,6 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Line2D.Float;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -66,8 +65,8 @@ public class CollisionSystem {
 		
 		double centerX = 400;
 		double centerY = 400;
-		int rotate = 90;
-		sides = 5;
+		int rotate = 40;
+		sides = 8;
 		radius = 100;
 		
 		for(int i = 0; i < sides; i++) {
@@ -174,12 +173,12 @@ public class CollisionSystem {
 		
 	    // Check if the intersection point lies on the second line segment
 		if(x3 == x4) { // vertical lines
-			if(intersectionY >= y3 && intersectionY <= y4 && d1 < d2) {
+			if(intersectionY >= y3 && intersectionY <= y4 && d1 < d2 || intersectionY <= y3 && intersectionY >= y4 && d1 < d2) {
 				intersected = true;
 			} else {
 				intersected = false;
 			}
-		} else if(intersectionX >= x3 && intersectionX <= x4 && d1 < d2) { // non vertical lines
+		} else if(intersectionX >= x3 && intersectionX <= x4 && d1 < d2 || intersectionX <= x3 && intersectionX >= x4 && d1 < d2 ) { // non vertical lines
 			intersected = true;
 		} else {
 			intersected = false;
@@ -234,21 +233,23 @@ public class CollisionSystem {
 		
 		// loop through each line segment
 		
-		for(int i = 0; i < sides; i++) {
+		boolean collision = false;
+		
+		for(int i = 0; i < sides - 1; i++) {
 			float x3 = (float) vertices.get(i).x;
 			float y3 = (float) vertices.get(i).y;
 			float x4 = (float) vertices.get(i + 1).x;
 			float y4 = (float) vertices.get(i + 1).y;
 			
-			boolean collision = predictedLineLineCollision(x1, y1, x2, y2, x3, y3, x4, y4);
+			collision = predictedLineLineCollision(x1, y1, x2, y2, x3, y3, x4, y4);
 			
 			if(collision) {
-				return true;
+				collision = true;
 			} else {
-				return false;
+				collision = false;
 			}
 		}
 		
-		return false;
+		return collision;
 	}
 }
