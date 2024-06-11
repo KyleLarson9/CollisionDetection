@@ -10,9 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class CollisionSystem {
-	
-	// make a line segment polygon algorithm  
-	
+		
 	private Sim sim;
 		
 	private float intersectionX = -1;
@@ -42,20 +40,12 @@ public class CollisionSystem {
 	private Path2D.Float polygon;
 	private  ArrayList<Point2D.Double> vertices = new ArrayList<>();
 
-
 	public CollisionSystem(Sim sim) {
 		this.sim = sim;	
 		polygon = new Path2D.Float();
 		vertices = new ArrayList<>();
 		
 		initializePolygon();
-		
-		// write this down: never add things in render method because it will continusouly add them while the program is running
-		int count = 0;
-		for(Point2D.Double vertex : vertices) {
-			count++;
-			System.out.println("Vertex " + count + ": " + vertex.getX() + ", " + vertex.getY());
-		}
 	}
 	
 	// public methods
@@ -65,6 +55,7 @@ public class CollisionSystem {
 		renderLineRectIntersectionPoints(g2d);
 		renderPolygon(g2d);
 		drawPolygonVerticies(g2d);
+		renderLinePolyIntersectionPoints(g2d);
 	}
 	
 	// private methods
@@ -76,7 +67,7 @@ public class CollisionSystem {
 		double centerX = 400;
 		double centerY = 400;
 		int rotate = 90;
-		sides = 8;
+		sides = 5;
 		radius = 100;
 		
 		for(int i = 0; i < sides; i++) {
@@ -145,8 +136,19 @@ public class CollisionSystem {
 			g2d.fillOval((int) intersectionX - 5,(int) intersectionY - 5,(int) 10,(int) 10);
 		}
 	}
-	
-	// just displays collision point
+		
+	private void renderLinePolyIntersectionPoints(Graphics2D g2d) {
+		
+		x2 = sim.mouseInputs.getX();
+		y2 = sim.mouseInputs.getY();
+		
+		boolean hit = linePolygonCollision(x1, y1, x2, y2);
+		
+		if(hit == true)	{
+			g2d.setColor(Color.red);
+			g2d.fillOval((int) intersectionX - 5,(int) intersectionY - 5,(int) 10,(int) 10);
+		}
+	}
 	
 	// displays collision point and predicted collision point
 	private boolean predictedLineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
@@ -186,6 +188,7 @@ public class CollisionSystem {
 		return intersected;
 	}
 	
+	// just display collision points
 	private boolean lineLineCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 		
 		boolean intersected = true;
@@ -227,7 +230,24 @@ public class CollisionSystem {
 		return false;
 	}
 	
-	private boolean linePolygonCollision(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+	private boolean linePolygonCollision(float x1, float y1, float x2, float y2) {
+		
+		// loop through each line segment
+		
+		for(int i = 0; i < sides; i++) {
+			float x3 = (float) vertices.get(i).x;
+			float y3 = (float) vertices.get(i).y;
+			float x4 = (float) vertices.get(i + 1).x;
+			float y4 = (float) vertices.get(i + 1).y;
+			
+			boolean collision = predictedLineLineCollision(x1, y1, x2, y2, x3, y3, x4, y4);
+			
+			if(collision) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 		
 		return false;
 	}
