@@ -29,7 +29,7 @@ public abstract class CollisionSystem {
 	public  int sides = 4;
 	public double radius = 100;
 	public Path2D.Float newPolyShape;
-	public ArrayList<Point2D.Double> vertices = new ArrayList<>();
+	public ArrayList<Point2D.Double> vertices;
 	
 	public CollisionSystem() {
 		newPolyShape = new Path2D.Float();
